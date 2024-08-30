@@ -1,63 +1,60 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { z } from 'zod'
+import type { FormSubmitEvent } from '#ui/types'
 import { pb, currentUser } from "@/utils/pocketbase";
 
-const username = ref("");
-const password = ref("");
+const router = useRouter();
+const isLoading = ref(false)
 
-async function login() {
+const schema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required')
+})
+
+type Schema = z.output<typeof schema>
+
+const state = reactive({
+  email: undefined,
+  password: undefined
+})
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  isLoading.value = true
   try {
-    await pb
-      .collection("users")
-      .authWithPassword(username.value, password.value);
+    await pb.collection("users").authWithPassword(event.data.email, event.data.password);
+    router.push('/')
   } catch (err) {
     console.error("Login failed:", err);
   }
 }
-
-async function signUp() {
-  try {
-    const data = {
-      username: username.value,
-      password: password.value,
-      passwordConfirm: password.value,
-      name: "hi mom!",
-    };
-    await pb.collection("users").create(data);
-    await login();
-  } catch (err) {
-    console.error("Sign up failed:", err);
-  }
-}
-
-function signOut() {
-  pb.authStore.clear();
-}
 </script>
 
 <template>
-    
   <UCard class="max-w-sm mt-10 mx-auto">
     <template #header>
       <h1 class="">Login</h1>
     </template>
+    
+    <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+      <UFormGroup label="Email" name="email">
+        <UInput v-model="state.email" placeholder="you@example.com" icon="i-heroicons-envelope" />
+      </UFormGroup>
 
-    <UFormGroup class="mb-4" label="Email">
-      <UInput placeholder="you@example.com" icon="i-heroicons-envelope" />
-    </UFormGroup>
-
-    <UFormGroup class="mb-4" label="Password">
+      <UFormGroup label="Password" name="password">
         <template #hint>
-      <NuxtLink class="underline cursor-pointer" to="">Forgot password?</NuxtLink>
-    </template>
-      <UInput icon="i-heroicons-key" />
-    </UFormGroup>
-    <UButton block class="">Login</UButton>
-      <p class="text-center my-2">
-        Don't have an account?
-        <NuxtLink class="underline cursor-pointer" to="/signup">Sign up</NuxtLink>
-      </p>
+          <NuxtLink class="underline cursor-pointer" to="">Forgot password?</NuxtLink>
+        </template>
+        <UInput v-model="state.password" type="password" icon="i-heroicons-key" />
+      </UFormGroup>
 
+      <UButton class="dark:text-gray-200" :loading="isLoading" type="submit" block>
+        Login
+      </UButton>
+    </UForm>
 
+    <p class="text-center text-sm my-2">
+      Don't have an account?
+      <NuxtLink class="underline cursor-pointer" to="/signup">Sign up</NuxtLink>
+    </p>
   </UCard>
 </template>
