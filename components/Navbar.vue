@@ -15,6 +15,7 @@
 
           </div>
           <div class="flex items-center space-x-4">
+            <ToggleDark />
             <UButton @click="signOut"v-if="currentUser">Logout</UButton>
             <UButton  v-else to="/login">Login</UButton>
   
