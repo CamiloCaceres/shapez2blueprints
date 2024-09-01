@@ -4,14 +4,14 @@ import { pb } from "@/utils/pocketbase";
 const route = useRoute();
 const router = useRouter();
 
-const blueprint = ref(null);
+const blueprint = ref();
 
 const isBlueprintVisible = ref(false);
 function toggleBlueprintVisible() {
   isBlueprintVisible.value = !isBlueprintVisible.value;
 }
 
-const getImageUrl = (item) => {
+const getImageUrl = (item: any) => {
   if (item && item.image) {
     return pb.files.getUrl(item, item.image, { thumb: "800x0" });
   }
