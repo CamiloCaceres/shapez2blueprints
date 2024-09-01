@@ -16,7 +16,7 @@
           </div>
           <div class="flex items-center space-x-4">
             <ToggleDark />
-            <UButton @click="signOut"v-if="currentUser">Logout</UButton>
+            <User v-if="currentUser" />
             <UButton  v-else to="/login">Login</UButton>
   
             
@@ -28,10 +28,5 @@
   </template>
   
   <script setup lang="ts">
-  import { pb, currentUser  } from '@/utils/pocketbase'
-
-  function signOut() {
-    pb.authStore.clear()
-  }
 
   </script>
