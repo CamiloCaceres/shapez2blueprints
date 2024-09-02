@@ -2,7 +2,7 @@
 import { pb } from "@/utils/pocketbase";
 
 const route = useRoute();
-const router = useRouter();
+const routeId = route.params.id.toString()
 
 const blueprint = ref();
 
@@ -23,7 +23,7 @@ onMounted(async () => {
     // fetch a paginated records list
     blueprint.value = await pb
       .collection("blueprints")
-      .getOne(route.params.id, {
+      .getOne(routeId, {
         expand: "author,tags",
       });
   } catch (error) {
