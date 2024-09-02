@@ -3,9 +3,9 @@ import { pb } from "@/utils/pocketbase";
 
 const route = useRoute();
 
-const blueprints = ref(null);
+const blueprints = ref();
 
-const getImageUrl = (item) => {
+const getImageUrl = (item: any) => {
   if (item && item.image) {
     return pb.files.getUrl(item, item.image, { thumb: "800x0" });
   }
