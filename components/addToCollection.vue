@@ -106,21 +106,31 @@ async function addToCollection() {
       <UCard>
         <template #header> Add blueprint to collection </template>
         <UFormGroup label="Select collection">
-          <USelect
+          <UInputMenu
             v-model="selectedCollectionId"
-            :options="
-              collections.map((collection: Collection) => ({
-                label: collection.name,
-                value: collection.id,
-              }))   
-            "
+            :options="collections"
+            option-attribute="name"
+            value-attribute="id"
+            searchable
             placeholder="Select a collection"
-          />
+            :search-attributes="['name', 'description']"
+          >
+            <template #option="{ option: collection }">
+              <div class="flex flex-col">
+                <span class="font-medium">{{ collection.name }}</span>
+              </div>
+            </template>
+            <template #option-empty="{ query }">
+              No collections found matching "{{ query }}"
+            </template>
+          </UInputMenu>
         </UFormGroup>
-        <div>
-          <UButton variant="outline">New collection</UButton>
-          <UButton @click="addToCollection()">{{
-            isLoading ? "Adding..." : "Add to collection"
+        <div class="flex items-end justify-end space-x-2 mt-4">
+          <UButton icon="i-heroicons-folder-plus" variant="outline"
+            >New collection</UButton
+          >
+          <UButton icon="i-heroicons-plus" @click="addToCollection()">{{
+            isLoading ? "Adding..." : "Add"
           }}</UButton>
         </div>
       </UCard>
