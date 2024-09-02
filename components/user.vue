@@ -7,7 +7,7 @@ function signOut() {
 </script>
 
 <template>
-  <UPopover>
+  <UPopover v-if="currentUser">
     <UButton variant="ghost" square size="xl" icon="i-heroicons-user" />
 
     <template #panel>
@@ -21,7 +21,7 @@ function signOut() {
           <NuxtLink :to="`/users/${currentUser.id}`" class="text-sm underline text-primary underline-offset-2"
             >My blueprints</NuxtLink
           >
-          <NuxtLink class="text-sm underline text-primary underline-offset-2"
+          <NuxtLink to="/collections/my-collections" class="text-sm underline text-primary underline-offset-2"
             >My collections</NuxtLink
           >
         </div>

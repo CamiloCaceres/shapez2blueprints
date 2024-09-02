@@ -15,6 +15,7 @@
 
           </div>
           <div class="flex items-center space-x-4">
+            <UButton variant="link" to="/collections/">Collections</UButton>
             <ToggleDark />
             <User v-if="currentUser" />
             <UButton  v-else to="/login">Login</UButton>
