@@ -5,6 +5,15 @@ import { pb, currentUser } from "@/utils/pocketbase";
 
 const router = useRouter();
 const isLoading = ref(false)
+const loginError = ref(false)
+
+watch(loginError, (newValue) => {
+  if (newValue) {
+    setTimeout(() => {
+      loginError.value = false
+    }, 5000)
+  }
+})
 
 const schema = z.object({
   email: z.string().email('Invalid email address'),
@@ -25,6 +34,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     router.push('/')
   } catch (err) {
     console.error("Login failed:", err);
+    loginError.value = true
+    isLoading. value = false
   }
 }
 </script>
@@ -36,6 +47,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     </template>
     
     <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+    <p class="text-red-500 " v-if="loginError">Login failed, please try again.</p>
+
       <UFormGroup label="Email" name="email">
         <UInput v-model="state.email" placeholder="you@example.com" icon="i-heroicons-envelope" />
       </UFormGroup>
@@ -51,7 +64,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         Login
       </UButton>
     </UForm>
-
     <p class="text-center text-sm my-2">
       Don't have an account?
       <NuxtLink class="underline cursor-pointer" to="/signup">Sign up</NuxtLink>

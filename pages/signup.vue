@@ -1,11 +1,21 @@
 <script setup lang="ts">
 import { z } from "zod";
 import type { FormSubmitEvent } from "#ui/types";
-import { pb, currentUser } from "@/utils/pocketbase";
+import { pb } from "@/utils/pocketbase";
 
 const router = useRouter();
 
 const isLoading = ref(false)
+
+const isError = ref(false)
+watch(isError, (newValue) => {
+  if (newValue) {
+    setTimeout(() => {
+      isError.value = false
+    }, 5000)
+  }
+})
+
 
 const schema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -16,9 +26,9 @@ const schema = z.object({
 type Schema = z.output<typeof schema>;
 
 const state = reactive({
-  username: undefined,
-  email: undefined,
-  password: undefined,
+  username: '',
+  email: '',
+  password: '',
 });
 
 async function login() {
@@ -30,7 +40,7 @@ async function login() {
       router.push('/');
     
   } catch (err) {
-    console.error("Login failed:", err);
+    router.push('/login');
   }
 }
 
@@ -43,8 +53,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     };
     await pb.collection("users").create(data);
     await login();
+
   } catch (err) {
     console.error("Sign up failed:", err);
+    isError.value = true
   }
 }
 </script>
@@ -55,6 +67,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <h1 class="">Sign Up</h1>
     </template>
     <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+      <p class="text-red-500 " v-if="isError">Signup failed, please try again.</p>
+
       <UFormGroup label="Username" name="username">
         <UInput
           v-model="state.username"
