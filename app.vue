@@ -3,4 +3,7 @@
   <UContainer>
     <NuxtPage />
   </UContainer>
+
+  <UNotifications />
+  
 </template>

@@ -26,6 +26,8 @@ const props = defineProps({
   blueprintId: { type: String, required: true },
 });
 
+const toast = useToast();
+
 const isOpen = ref(false);
 const isLoading = ref(false);
 
@@ -56,14 +58,32 @@ onMounted(async () => {
 async function addToCollection() {
   if (!currentUser.value) {
     console.log("You must be logged in to add to a collection");
+    toast.add({
+      id: "unauthorized",
+      title: "Unathorized",
+      description: "You must be logged in to preform this action",
+      color: 'red'
+    });
     return;
   }
   if (!selectedCollectionId.value) {
     console.log("Please select a collection first");
+    toast.add({
+      id: "bp_error_unsele",
+      title: "Error adding blueprint to collection:",
+      description: "Please select a collection first",
+      color: 'red'
+    });
     return;
   }
   if (isBlueprintInCollection.value) {
     console.log("This blueprint is already in the selected collection");
+    toast.add({
+      id: "bp_error_repeated",
+      title: "Error adding blueprint to collection:",
+      description: "This blueprint is already in the selected collection",
+      color: 'red'
+    });
     return;
   }
 
@@ -82,24 +102,48 @@ async function addToCollection() {
     await pb.collection("collections").update(selectedCollectionId.value, {
       "blueprints+": props.blueprintId,
     });
-
     console.log("Blueprint added to collection successfully");
+    toast.add({
+      id: "bp_uploaded",
+      title: "Blueprint added to collection successfully",
+      color: 'green'
+    });
   } catch (error) {
     console.error("Error adding blueprint to collection:", error);
+    toast.add({
+      id: "bp_error",
+      title: "Error adding blueprint to collection:",
+      description: error?.toString(),
+      color: 'red'
+    });
   } finally {
     isLoading.value = false;
   }
 }
+function handleOpenModal() {
+  if (!currentUser.value) {
+    console.log("You must be logged in to add to a collection");
+    toast.add({
+      id: "unauthorized",
+      title: "Unathorized",
+      description: "You must be logged in to preform this action",
+      color: 'red'
+    });
+    return;
+  }
+  isOpen.value = true;
+}
 </script>
 
 <template>
-  <UButton
-    @click="isOpen = true"
-    icon="i-heroicons-plus"
-    class="mt-10 text-right"
-  >
-    Add to collection
-  </UButton>
+    <UButton
+      @click="handleOpenModal"
+      icon="i-heroicons-plus"
+      class="mt-10 text-right"
+    >
+      Add to collection
+    </UButton>
+
 
   <UModal v-model="isOpen">
     <div class="p-4">
