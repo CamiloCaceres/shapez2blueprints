@@ -114,10 +114,9 @@ onMounted(async () => {
       </div>
       <div class="flex justify-between">
         <!-- if logged in, i call likes, filter by this user. if this blueprint id is in likes, i change icon to solid  -->
-        <UButton icon="i-heroicons-plus" class="mt-10 text-right"
-          >Add to collection</UButton
-        >
-        <UButton
+        <AddToCollection 
+          :blueprint-id="blueprint.id"
+        />        <UButton
           square
           color="rose"
           icon="i-heroicons-heart"
