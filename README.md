@@ -1,75 +1,28 @@
-# Nuxt UI Minimal Starter
+# Shapez 2 Blueprints
 
-Look at [Nuxt docs](https://nuxt.com/docs/getting-started/introduction) and [Nuxt UI docs](https://ui.nuxt.com) to learn more.
+Shapez 2 Blueprints is a web application for sharing and discovering blueprints for the game Shapez 2. Users can upload, browse, and download blueprints to enhance their gaming experience.
 
-## Setup
+Visit the live site: [shapez2blueprints.com](https://shapez2blueprints.com)
 
-Make sure to install the dependencies:
+## Features
 
-```bash
-# npm
-npm install
+- Upload and share Shapez 2 blueprints
+- Browse and search for blueprints
+- Download blueprints for use in your game
 
-# pnpm
-pnpm install
+## Technology Stack
 
-# yarn
-yarn install
+- Backend: Pocketbase
+- Frontend: Nuxt 3 with TypeScript 
+- Blueprint Storage: .spz2bp files 
 
-# bun
-bun install
-```
+## License
 
-## Development Server
+This project is licensed under the [MIT License](LICENSE).
 
-Start the development server on `http://localhost:3000`:
+## Contact
 
-```bash
-# npm
-npm run dev
+For any questions or concerns, please open an issue on this repository or contact the maintainer at camiloac97@gmail.com
 
-# pnpm
-pnpm run dev
+---
 
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
