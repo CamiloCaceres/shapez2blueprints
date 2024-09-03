@@ -5,12 +5,12 @@ const route = useRoute();
 const routeId = route.params.id.toString()
 
 
-const collections = ref()
+const collection = ref()
 
   onMounted(async () => {
   try {
     // fetch a paginated records list
-    collections.value = await pb.collection("collections").getOne(routeId);
+    collection.value = await pb.collection("collections").getOne(routeId);
   } catch (error) {
     console.error("Error fetching collections:", error);
   }
@@ -18,5 +18,5 @@ const collections = ref()
 </script>
 
 <template>
-    {{ collections }}
+    {{ collection }}
 </template>

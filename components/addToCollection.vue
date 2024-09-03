@@ -30,9 +30,12 @@ const toast = useToast();
 
 const isOpen = ref(false);
 const isLoading = ref(false);
+const isAddCollectionVisible = ref(false);
 
 const myCollections = ref();
 const selectedCollectionId = ref("");
+
+const newCollectionName = ref("");
 
 const isBlueprintInCollection = computed(() => {
   if (!selectedCollectionId.value) return false;
@@ -62,7 +65,7 @@ async function addToCollection() {
       id: "unauthorized",
       title: "Unathorized",
       description: "You must be logged in to preform this action",
-      color: 'red'
+      color: "red",
     });
     return;
   }
@@ -72,7 +75,7 @@ async function addToCollection() {
       id: "bp_error_unsele",
       title: "Error adding blueprint to collection:",
       description: "Please select a collection first",
-      color: 'red'
+      color: "red",
     });
     return;
   }
@@ -82,7 +85,7 @@ async function addToCollection() {
       id: "bp_error_repeated",
       title: "Error adding blueprint to collection:",
       description: "This blueprint is already in the selected collection",
-      color: 'red'
+      color: "red",
     });
     return;
   }
@@ -106,7 +109,7 @@ async function addToCollection() {
     toast.add({
       id: "bp_uploaded",
       title: "Blueprint added to collection successfully",
-      color: 'green'
+      color: "green",
     });
   } catch (error) {
     console.error("Error adding blueprint to collection:", error);
@@ -114,12 +117,40 @@ async function addToCollection() {
       id: "bp_error",
       title: "Error adding blueprint to collection:",
       description: error?.toString(),
-      color: 'red'
+      color: "red",
     });
   } finally {
     isLoading.value = false;
+    isOpen.value = false
   }
 }
+
+async function addCollection() {
+  try {
+    await pb.collection("collections").create({
+      name: newCollectionName.value,
+      blueprints: [props.blueprintId],
+      author: currentUser.value?.id,
+    });
+    toast.add({
+      id: "collection_created",
+      title: "Collection created successfully",
+      description: `Collection ${newCollectionName.value} created and blueprint added.`,
+      color: "green",
+    });
+    isOpen.value = false
+
+  } catch (error) {
+    console.error("Error creating collection:", error);
+    toast.add({
+      id: "create_collection_error",
+      title: "Error creating collection:",
+      description: error?.toString(),
+      color: "red",
+    });
+  }
+}
+
 function handleOpenModal() {
   if (!currentUser.value) {
     console.log("You must be logged in to add to a collection");
@@ -127,7 +158,7 @@ function handleOpenModal() {
       id: "unauthorized",
       title: "Unathorized",
       description: "You must be logged in to preform this action",
-      color: 'red'
+      color: "red",
     });
     return;
   }
@@ -136,19 +167,20 @@ function handleOpenModal() {
 </script>
 
 <template>
-    <UButton
-      @click="handleOpenModal"
-      icon="i-heroicons-plus"
-      class="mt-10 text-right"
-    >
-      Add to collection
-    </UButton>
-
+  <UButton
+    @click="handleOpenModal"
+    icon="i-heroicons-plus"
+    class="mt-10 text-right"
+  >
+    Add to collection
+  </UButton>
 
   <UModal v-model="isOpen">
     <div class="p-4">
       <UCard>
-        <template #header> Add blueprint to collection </template>
+        <template #header>
+          <h1 class="text-xl font-semibold">Add blueprint to collection</h1>
+        </template>
         <UFormGroup label="Select collection">
           <UInputMenu
             v-model="selectedCollectionId"
@@ -170,13 +202,26 @@ function handleOpenModal() {
           </UInputMenu>
         </UFormGroup>
         <div class="flex items-end justify-end space-x-2 mt-4">
-          <UButton icon="i-heroicons-folder-plus" variant="outline"
+          <UButton
+            v-if="!isAddCollectionVisible"
+            @click="isAddCollectionVisible = !isAddCollectionVisible"
+            icon="i-heroicons-folder-plus"
+            variant="outline"
             >New collection</UButton
           >
           <UButton icon="i-heroicons-plus" @click="addToCollection()">{{
             isLoading ? "Adding..." : "Add"
           }}</UButton>
         </div>
+        <template v-if="isAddCollectionVisible" #footer>
+          <div class="flex space-x-2 items-end">
+            <UFormGroup class="flex-grow" label="New collection name:">
+                <!-- TODO: need to create validation -->
+              <UInput v-model="newCollectionName" />
+            </UFormGroup>
+            <UButton @click="addCollection()" icon="i-heroicons-folder-plus">Create collection</UButton>
+          </div>
+        </template>
       </UCard>
     </div>
   </UModal>
