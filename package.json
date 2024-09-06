@@ -12,9 +12,11 @@
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^2.18.4",
+    "@types/pako": "^2.0.3",
     "nuxt": "^3.12.4"
   },
   "dependencies": {
+    "pako": "^2.1.0",
     "pocketbase": "^0.21.5",
     "zod": "^3.23.8"
   }
