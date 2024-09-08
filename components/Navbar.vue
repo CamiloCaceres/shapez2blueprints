@@ -15,11 +15,11 @@
 
           </div>
           <div class="flex items-center space-x-4">
-            <UButton icon="i-heroicons-plus" to="/add-blueprint">Add blueprint</UButton>
+            <UButton  color="amber" icon="i-heroicons-plus" to="/add-blueprint">Add blueprint</UButton>
             <UButton variant="link" to="/collections">Collections</UButton>
-            <ToggleDark />
             <User v-if="currentUser" />
-            <UButton  v-else to="/login">Login</UButton>
+            <UButton variant="link" v-else to="/login">Login</UButton>
+            <ToggleDark />
   
             
           </div>

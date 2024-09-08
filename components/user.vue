@@ -8,10 +8,11 @@ function signOut() {
 
 <template>
   <UPopover v-if="currentUser">
-    <UButton variant="ghost" square size="xl" icon="i-heroicons-user" />
+    <UButton class="capitalize" variant="link">{{ currentUser.username }}</UButton>
 
     <template #panel>
       <div class="py-6 px-10 flex flex-col space-y-4 items-start">
+
         <div class="flex flex-col">
           <h2 class="text-lg font-semibold">{{ currentUser.username }}</h2>
           <h3 class="text-sm dark:text-gray-400">{{ currentUser.email }}</h3>
