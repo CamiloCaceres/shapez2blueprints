@@ -44,13 +44,11 @@
         class="md:hidden"
         id="mobile-menu"
       >
-        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col justify-center items-center">
           <UButton block variant="ghost" to="/collections">Collections</UButton>
           <User v-if="currentUser" />
           <UButton block variant="ghost" v-else to="/login">Login</UButton>
-          <div class="flex justify-center mt-2">
             <ToggleDark />
-          </div>
         </div>
       </div>
     </nav>
