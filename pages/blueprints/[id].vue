@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { pb } from "@/utils/pocketbase";
+import { pb, currentUser } from "@/utils/pocketbase";
 
 const route = useRoute();
-const routeId = route.params.id.toString()
+const routeId = route.params.id.toString();
 
 const blueprint = ref();
 
@@ -21,15 +21,57 @@ const getImageUrl = (item: any) => {
 onMounted(async () => {
   try {
     // fetch a paginated records list
-    blueprint.value = await pb
-      .collection("blueprints")
-      .getOne(routeId, {
-        expand: "author,tags",
-      });
+    blueprint.value = await pb.collection("blueprints").getOne(routeId, {
+      expand: "author,tags",
+    });
+    await checkIfBlueprintLiked();
   } catch (error) {
     console.error("Error fetching blueprints:", error);
   }
 });
+
+const isBlueprintLiked = ref(false);
+const like = ref();
+
+const checkIfBlueprintLiked = async () => {
+  if (currentUser.value) {
+    const likes = await pb.collection("likes").getFullList({
+      filter: `blueprint = "${blueprint.value.id}" && user = "${currentUser.value.id}"`,
+    });
+    like.value = likes[0];
+    isBlueprintLiked.value = likes.length > 0;
+  }
+};
+
+const removeLike = async () => {
+  if (currentUser.value) {
+    try {
+      await pb.collection("likes").delete(like.value.id);
+    } catch (error) {
+      console.error("Error removing like:", error);
+    }
+  }
+};
+const likeBlueprint = async () => {
+  if (currentUser.value) {
+    try {
+      await pb.collection("likes").create({
+        blueprint: blueprint.value.id,
+        user: currentUser.value.id,
+      });
+      isBlueprintLiked.value = true;
+    } catch (error) {
+      console.error("Error liking blueprint:", error);
+    }
+  }
+};
+const handleLike = async () => {
+  if (isBlueprintLiked.value) {
+    await removeLike();
+  } else {
+    await likeBlueprint();
+  }
+};
 </script>
 
 <template>
@@ -82,47 +124,74 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div
-      class="dark:bg-slate-800 w-60 h-60 flex flex-col p-5 shadow-xl rounded"
-    >
-      <div class="flex justify-between">
-        <h2>Author:</h2>
-        <NuxtLink
-          class="underline text-amber-500 underline-offset-2"
-          :to="`/users/${blueprint.author}`"
-          >{{ blueprint.expand.author.username }}</NuxtLink
-        >
-      </div>
+    <div class="flex flex-col gap-8 mt-8">
+      <div
+        class="dark:bg-slate-800 w-60 h-60 flex flex-col p-5 shadow-xl rounded"
+      >
+        <div class="flex justify-between">
+          <h2>Author:</h2>
+          <NuxtLink
+            class="underline text-amber-500 underline-offset-2"
+            :to="`/users/${blueprint.author}`"
+            >{{ blueprint.expand.author.username }}</NuxtLink
+          >
+        </div>
 
-      <div class="flex justify-between">
-        <h2>Machines:</h2>
-        <h3>12.000</h3>
-      </div>
+        <div class="flex justify-between">
+          <h2>Machines:</h2>
+          <h3>{{ blueprint.building_count }}</h3>
+        </div>
 
-      <div class="flex justify-between">
-        <h2>BP cost:</h2>
-        <h3>12.000</h3>
-      </div>
+        <div class="flex justify-between">
+          <h2>BP cost:</h2>
+          <h3>{{ blueprint.cost }}</h3>
+        </div>
 
-      <div class="flex justify-between">
-        <h2>Likes:</h2>
-        <h3>{{ blueprint.like_count }}</h3>
+        <div class="flex justify-between">
+          <h2>{{ blueprint.island_count === 0 ? "Type" : "Islands" }}:</h2>
+          <h3>
+            {{
+              blueprint.island_count === 0
+                ? "Buildings"
+                : blueprint.island_count
+            }}
+          </h3>
+        </div>
+
+        <div class="flex justify-between">
+          <!-- TODO: if logged in, i call likes, filter by this user. if this blueprint id is in likes, i change icon to solid  -->
+          <AddToCollection :blueprint-id="blueprint.id" />
+          <UButton
+            square
+            color="rose"
+            :icon="isBlueprintLiked ? 'i-heroicons-heart' : 'i-heroicons-heart-solid'"
+            variant="ghost"
+            class="mt-10 text-right"
+            @click="handleLike"
+          ></UButton>
+        </div>
       </div>
-      <div class="flex justify-between">
-        <h2>tags:</h2>
-        <h3 v-for="tag in blueprint.expand.tags">{{ tag.name }}</h3>
+      <div class="bg-slate-800 p-5 shadow-xl rounded">
+        <div class="flex justify-between">
+          <h2>Tags:</h2>
+          <h3 v-for="tag in blueprint.expand.tags">{{ tag.name }}</h3>
+        </div>
       </div>
-      <div class="flex justify-between">
-        <!-- if logged in, i call likes, filter by this user. if this blueprint id is in likes, i change icon to solid  -->
-        <AddToCollection 
-          :blueprint-id="blueprint.id"
-        />        <UButton
-          square
-          color="rose"
-          icon="i-heroicons-heart"
-          variant="ghost"
-          class="mt-10 text-right"
-        ></UButton>
+    </div>
+  </div>
+  <div v-if="!blueprint">
+    <div class="flex flex-col md:flex-row gap-8 mt-8">
+      <div class="flex-grow">
+        <USkeleton class="h-60 w-full mb-4" />
+        <div class="space-y-2">
+          <USkeleton class="h-6 w-3/4" />
+          <USkeleton class="h-4 w-full" />
+          <USkeleton class="h-4 w-full" />
+        </div>
+        <USkeleton class="h-40 w-full mt-4" />
+      </div>
+      <div class="w-60">
+        <USkeleton class="h-60 w-60" />
       </div>
     </div>
   </div>

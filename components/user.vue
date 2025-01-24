@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { currentUser } from "@/utils/pocketbase";
-
+const router = useRouter();
 function signOut() {
   pb.authStore.clear();
 }
@@ -14,7 +14,7 @@ function signOut() {
       <div class="py-6 px-10 flex flex-col space-y-4 items-start">
 
         <div class="flex flex-col">
-          <h2 class="text-lg font-semibold">{{ currentUser.username }}</h2>
+          <h2 @click="router.push(`/users/${currentUser.id}`)" class="text-lg font-semibold">{{ currentUser.username }}</h2>
           <h3 class="text-sm dark:text-gray-400">{{ currentUser.email }}</h3>
           <div class="w-full h-1 border-t mt-2"></div>
         </div>

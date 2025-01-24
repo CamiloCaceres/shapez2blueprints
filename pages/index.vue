@@ -1,50 +1,3 @@
-<script setup lang="ts">
-import { pb } from "@/utils/pocketbase";
-
-useHead({
-  title: 'Shapez 2 Blueprints - Share Your Creations',
-  meta: [
-    { name: 'description', content: 'Discover and share Shapez 2 blueprints with the community. Browse user-created designs and contribute your own creations.' },
-    { name: 'keywords', content: 'Shapez 2, blueprints, game designs, community creations, puzzle game' },
-    { property: 'og:title', content: 'Shapez 2 Blueprints - Community Creations' },
-    { property: 'og:description', content: 'Explore and share Shapez 2 blueprints. Join our community of creators!' },
-    { property: 'og:type', content: 'website' },
-    { property: 'og:url', content: 'https://shapez2blueprints.com' }, // Replace with your actual URL
-    { property: 'og:image', content: 'https://shapez2blueprints.com/og-image.jpg' }, // Replace with your actual image URL
-  ],
-  link: [
-    { rel: 'canonical', href: 'https://shapez2blueprints.com' } // Replace with your actual URL
-  ]
-})
-const resultList = ref();
-const isLoading = ref(true);
-
-onMounted(async () => {
-  await fetchBlueprints();
-});
-
-const fetchBlueprints = async () => {
-  isLoading.value = true;
-  try {
-    resultList.value = await pb.collection("blueprints").getList(page.value, perPage.value, {
-      expand: "author,tags",
-    });
-  } catch (error) {
-    console.error("Error fetching blueprints:", error);
-  } finally {
-    isLoading.value = false;
-  }
-}
-
-const page = ref(1)
-const perPage = ref(8)
-
-watch(page, () => {
-  fetchBlueprints()
-})
-
-</script>
-
 <template>
   <h1 class="text-3xl font-bold mx-auto text-center mt-16">
     Shapez 2 Blueprints
@@ -92,3 +45,49 @@ watch(page, () => {
     />
   </div>
 </template>
+<script setup lang="ts">
+import { pb } from "@/utils/pocketbase";
+
+useHead({
+  title: 'Shapez 2 Blueprints - Share Your Creations',
+  meta: [
+    { name: 'description', content: 'Discover and share Shapez 2 blueprints with the community. Browse user-created designs and contribute your own creations.' },
+    { name: 'keywords', content: 'Shapez 2, blueprints, game designs, community creations, puzzle game' },
+    { property: 'og:title', content: 'Shapez 2 Blueprints - Community Creations' },
+    { property: 'og:description', content: 'Explore and share Shapez 2 blueprints. Join our community of creators!' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: 'https://shapez2blueprints.com' }, // Replace with your actual URL
+    { property: 'og:image', content: 'https://shapez2blueprints.com/og-image.jpg' }, // Replace with your actual image URL
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://shapez2blueprints.com' } // Replace with your actual URL
+  ]
+})
+const resultList = ref();
+const isLoading = ref(true);
+
+onMounted(async () => {
+  await fetchBlueprints();
+});
+
+const fetchBlueprints = async () => {
+  isLoading.value = true;
+  try {
+    resultList.value = await pb.collection("blueprints").getList(page.value, perPage.value, {
+      expand: "author,tags",
+    });
+  } catch (error) {
+    console.error("Error fetching blueprints:", error);
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+const page = ref(1)
+const perPage = ref(8)
+
+watch(page, () => {
+  fetchBlueprints()
+})
+
+</script>

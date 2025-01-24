@@ -18,7 +18,7 @@ const getImageUrl = (blueprint: any) => {
 <template>
   <div class="rounded cursor-pointer dark:bg-gray-800 shadow-xl h-full">
     <img
-      @click="router.push(`blueprints/${props.blueprint.id}`)"
+      @click="router.push(`/blueprints/${props.blueprint.id}`)"
       class="w-full rounded"
       :src="getImageUrl(props.blueprint)"
       :alt="props.blueprint.title"
@@ -27,7 +27,7 @@ const getImageUrl = (blueprint: any) => {
     <div class="p-3 space-y-2">
       <div class="flex flex-col">
         <h2
-          @click="router.push(`blueprints/${props.blueprint.id}`)"
+          @click="router.push(`/blueprints/${props.blueprint.id}`)"
           class="text-xl font-semibold capitalize"
         >
           {{ props.blueprint.title }}

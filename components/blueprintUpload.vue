@@ -3,8 +3,7 @@ import { ref, watch } from 'vue'
 import { useFileSystemAccess } from '@vueuse/core'
 
 const fileContent = ref('')
-
-const { isSupported, open, data } = useFileSystemAccess({
+const { isSupported, open, data, fileName } = useFileSystemAccess({
   dataType: 'Text',
   types: [{
     description: 'Shapez2 Blueprint',

@@ -2,14 +2,14 @@
 import { pb, currentUser } from "@/utils/pocketbase";
 
 const route = useRoute();
-const collections = ref();
+const myCollections = ref();
 
 
 
 onMounted(async () => {
   try {
     // fetch a paginated records list
-    collections.value = await pb.collection("collections").getList(1, 50, {
+    myCollections.value = await pb.collection("collections").getList(1, 50, {
         filter: `author = '${currentUser.value?.id}'`
         
     });
@@ -19,5 +19,5 @@ onMounted(async () => {
 });
 </script>
 <template>
-    <pre>{{ collections }}</pre>
+    <pre>{{ myCollections }}</pre>
 </template>

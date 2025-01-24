@@ -1,8 +1,15 @@
 <script setup lang="ts">
+
+definePageMeta({
+  middleware: ["auth"]
+  // or middleware: 'auth'
+})
 import { ref, reactive } from "vue";
 import { useFileDialog } from "@vueuse/core";
 import { pb, currentUser } from "@/utils/pocketbase";
 import { processBlueprintString } from "@/utils/blueprints";
+
+const toast = useToast();
 
 const blueprint_data = reactive({
   title: "",
@@ -12,7 +19,8 @@ const blueprint_data = reactive({
   islandCount: 0,
   cost: 0,
 });
-const tags = ref<string[]>(["oyib9c5uvf6fz9b"]);
+
+const tags = ref<string[]>([]);
 
 //file upload
 const { files, open, reset, onChange } = useFileDialog({
@@ -47,6 +55,7 @@ const handleBlueprintUploaded = (content: string) => {
 };
 watch(blueprint_string, (newBlueprintString) => {
   const summary = processBlueprintString(newBlueprintString);
+
   blueprint_data.isValid = summary.isValid;
   blueprint_data.buildingCount = summary.buildingCount;
   blueprint_data.islandCount = summary.islandCount;
@@ -55,6 +64,15 @@ watch(blueprint_string, (newBlueprintString) => {
 
 //Upload blueprint
 const uploadBlueprint = async () => {
+  if (!blueprint_data.isValid) {
+    toast.add({
+      id: "bp_error_invalid",
+      title: "Invalid Blueprint",
+      description: "The blueprint is invalid",
+      color: "red",
+    });
+    return;
+  }
   try {
     const formData = new FormData();
     formData.append("title", blueprint_data.title);
@@ -72,7 +90,7 @@ const uploadBlueprint = async () => {
     const createdRecord = await pb.collection("blueprints").create(formData);
     console.log("Blueprint uploaded successfully:", createdRecord);
     await pb.collection("blueprints").update(createdRecord.id, {
-      'tags+': tags.value,
+      "tags+": tags.value,
     });
     navigateTo("/blueprints/" + createdRecord.id);
     // Reset form or navigate to a success page
@@ -88,7 +106,7 @@ const uploadBlueprint = async () => {
       <h1 class="text-2xl font-bold">Add Blueprint</h1>
     </template>
 
-    <UFormGroup label="title">
+    <UFormGroup label="Title">
       <UInput v-model="blueprint_data.title" />
     </UFormGroup>
     <UFormGroup label="Description">
@@ -97,7 +115,10 @@ const uploadBlueprint = async () => {
 
     <h2>Upload Blueprint</h2>
     <BlueprintUpload @content-extracted="handleBlueprintUploaded" />
-    <UTextarea v-model="blueprint_string" />
+    <UFormGroup :error="blueprint_string != '' && !blueprint_data.isValid && 'Please enter a valid blueprint'" label="Blueprint">
+      <UTextarea v-model="blueprint_string" />
+
+    </UFormGroup>
     <UFormGroup v-if="!selectedImage" label="Upload image">
       <UButton @click="open">Choose Image</UButton>
     </UFormGroup>
@@ -118,6 +139,8 @@ const uploadBlueprint = async () => {
         ></UButton>
       </div>
     </div>
+    <TagsInput v-model="tags" />
+
     <template #footer>
       <div class="flex justify-end">
         <UButton color="amber" @click="uploadBlueprint" class="self-end"

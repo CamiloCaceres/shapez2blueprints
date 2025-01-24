@@ -3,6 +3,7 @@ import { pb, currentUser } from "@/utils/pocketbase";
 
 const route = useRoute();
 const blueprints = ref();
+const isLoading = ref(true);
 
 onMounted(async () => {
   try {
@@ -12,6 +13,8 @@ onMounted(async () => {
     });
   } catch (error) {
     console.error("Error fetching blueprints:", error);
+  } finally {
+    isLoading.value = false;
   }
 });
 </script>
@@ -24,7 +27,7 @@ onMounted(async () => {
 
     <div
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10"
-      v-if="blueprints"
+      v-if="!isLoading && blueprints"
     >
       <BlueprintCard
         v-for="blueprint in blueprints.items"
